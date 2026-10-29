@@ -1,0 +1,89 @@
+
+.photo-card {
+  min-width: 0;
+  overflow: hidden;
+  border: 1px solid #e1e9e3;
+  border-radius: 16px;
+  background: white;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.photo-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 25px rgba(27, 65, 55, 0.08);
+}
+
+.photo-preview {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  background: #eef3ef;
+}
+
+.photo-preview img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.photo-details {
+  padding: 16px;
+}
+
+.photo-details h3 {
+  overflow-wrap: anywhere;
+  color: #234338;
+  font-size: 16px;
+}
+
+.photo-details p {
+  margin-top: 6px;
+  color: #7c8b83;
+  font-size: 12px;
+}
+
+.photo-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 15px;
+}
+
+.download-button,
+.delete-button {
+  width: 100%;
+  padding: 11px 8px;
+  border: 1px solid #cbded2;
+  border-radius: 9px;
+  background: white;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.download-button {
+  color: #2b6652;
+}
+
+.download-button:hover {
+  background: #edf6ef;
+}
+
+.delete-button {
+  border-color: #f0d5d5;
+  color: #a33b3b;
+}
+
+.delete-button:hover {
+  background: #fff0f0;
+}
+
+@media (max-width: 700px) {
+  .photo-details {
+    padding: 12px;
+  }
+
+  .photo-details h3 {
+    font-size: 14px;
+  }
+}

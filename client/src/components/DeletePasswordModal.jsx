@@ -3,16 +3,25 @@ import { useState } from "react";
 
 function DeletePasswordModal({ photo, onCancel, onSubmit, message }) {
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
 
   if (!photo) return null;
+
+  const isDeleting = message === "Deleting certificate...";
 
   function handleSubmit(event) {
     event.preventDefault();
 
-    if (!password.trim()) return;
+    if (!password.trim() || isDeleting) return;
 
     onSubmit(password);
     setPassword("");
+  }
+
+  function handleCancel() {
+    setPassword("");
+    setShowPassword(false);
+    onCancel();
   }
 
   return (
@@ -35,15 +44,28 @@ function DeletePasswordModal({ photo, onCancel, onSubmit, message }) {
             Deletion Password
           </label>
 
-          <input
-            id="delete-password"
-            type="password"
-            value={password}
-            onChange={(event) => setPassword(event.target.value)}
-            placeholder="Enter private password"
-            autoComplete="current-password"
-            required
-          />
+          <div className="password-input-wrapper">
+            <input
+              id="delete-password"
+              type={showPassword ? "text" : "password"}
+              value={password}
+              onChange={(event) => setPassword(event.target.value)}
+              placeholder="Enter private password"
+              autoComplete="current-password"
+              required
+              disabled={isDeleting}
+            />
+
+            <button
+              type="button"
+              className="password-toggle"
+              onClick={() => setShowPassword((current) => !current)}
+              aria-label={showPassword ? "Hide password" : "Show password"}
+              aria-pressed={showPassword}
+            >
+              {showPassword ? "Hide" : "Show"}
+            </button>
+          </div>
 
           {message && (
             <p className="modal-message" role="status">
@@ -55,13 +77,18 @@ function DeletePasswordModal({ photo, onCancel, onSubmit, message }) {
             <button
               type="button"
               className="modal-secondary"
-              onClick={onCancel}
+              onClick={handleCancel}
+              disabled={isDeleting}
             >
               Cancel
             </button>
 
-            <button type="submit" className="modal-danger">
-              Verify Password
+            <button
+              type="submit"
+              className="modal-danger"
+              disabled={isDeleting || !password.trim()}
+            >
+              {isDeleting ? "Deleting..." : "Verify Password"}
             </button>
           </div>
         </form>

@@ -8,11 +8,11 @@ function PhotoGallery({ photos, onDownload, onDelete }) {
       <div className="gallery-heading">
         <div>
           <p className="eyebrow">THE COLLECTION</p>
-          <h2>Available Photos</h2>
+          <h2>Available Certificates</h2>
         </div>
 
         <span className="photo-count">
-          {photos.length} {photos.length === 1 ? "PHOTO" : "PHOTOS"}
+          {photos.length} {photos.length === 1 ? "CERTIFICATE" : "CERTIFICATES"}
         </span>
       </div>
 
@@ -25,14 +25,14 @@ function PhotoGallery({ photos, onDownload, onDelete }) {
           <h3>Your gallery starts here</h3>
 
           <p>
-            No photos yet. Upload the first student photo to get started.
+            No certificates yet. Upload the first student certificate to get started.
           </p>
         </div>
       ) : (
         <div className="photo-grid">
           {photos.map((photo) => (
             <PhotoCard
-              key={photo.id}
+              key={photo._id}
               photo={photo}
               onDownload={onDownload}
               onDelete={onDelete}

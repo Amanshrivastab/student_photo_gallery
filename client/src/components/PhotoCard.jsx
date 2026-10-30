@@ -5,12 +5,19 @@ function PhotoCard({ photo, onDownload, onDelete }) {
   return (
     <article className="photo-card">
       <div className="photo-preview">
-        <img src={photo.previewUrl} alt={`${photo.name}'s photo`} />
+        <img
+          src={photo.imageUrl}
+          alt={`${photo.name}'s certificate`}
+          loading="lazy"
+        />
       </div>
 
       <div className="photo-details">
         <h3>{photo.name}</h3>
+
         <p>Roll No: {photo.rollNumber}</p>
+
+        <p>Category: {photo.category}</p>
 
         <div className="photo-actions">
           <button
@@ -18,14 +25,14 @@ function PhotoCard({ photo, onDownload, onDelete }) {
             type="button"
             onClick={() => onDownload(photo)}
           >
-            ↓ Download PNG
+            ↓ Download Certificate
           </button>
 
           <button
             className="delete-button"
             type="button"
             onClick={() => onDelete(photo)}
-            aria-label={`Delete photo of ${photo.name}`}
+            aria-label={`Delete certificate of ${photo.name}`}
           >
             Delete
           </button>

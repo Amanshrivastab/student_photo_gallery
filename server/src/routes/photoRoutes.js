@@ -8,6 +8,9 @@ const {
 } = require("../controllers/photoController");
 
 const upload = require("../middleware/upload");
+const {
+  deleteLimiter,
+} = require("../middleware/rateLimiter");
 
 const router = express.Router();
 
@@ -18,6 +21,6 @@ router.get("/", getPhotos);
 router.post("/", upload.single("certificate"), uploadPhoto);
 
 // DELETE: Delete a certificate by ID
-router.delete("/:id", deletePhoto);
+router.delete("/:id", deleteLimiter, deletePhoto);
 
 module.exports = router;

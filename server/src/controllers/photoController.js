@@ -104,5 +104,40 @@ async function uploadPhoto(req, res) {
     });
   }
 }
+async function getPhotos(req, res){
+  try{
 
-module.exports = { uploadPhoto };
+    const {category} = req.query;
+
+    const filter = {};
+
+    if(category){
+      if(!ALLOWED_CATEGORIES.includes(category)){
+        return res.status(400).json({
+          success: false,
+          message: "Invalid certificate category",
+        });
+      }
+      filter.category = category;
+    }
+    const photos = await Photo.find(filter)
+  .sort({ createdAt: -1 })
+  .lean();    
+
+    return res.status(200).json({
+      success: true,
+      count: photos.length,
+      data: photos,
+    });
+
+  }catch(error){
+    console.error("Get certficates error: ", error.message);
+
+    return res.status(500).json({
+      success: false,
+      message: "Unable to fetch certificates",
+    });
+  }
+}
+
+module.exports = { uploadPhoto , getPhotos };

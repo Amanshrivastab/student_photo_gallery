@@ -2,11 +2,22 @@
 import { useRef, useState } from "react";
 import "../styles/upload-form.css";
 
-function UploadForm({ onUpload }) {
+const categories = [
+  "Academic",
+  "Course Completion",
+  "Internship",
+  "Hackathon",
+  "Achievement",
+  "Workshop & Webinar",
+  "Other",
+];
+
+function UploadForm({ onUpload, isUploading = false }) {
   const fileInputRef = useRef(null);
 
   const [name, setName] = useState("");
   const [rollNumber, setRollNumber] = useState("");
+  const [category, setCategory] = useState("");
   const [file, setFile] = useState(null);
   const [error, setError] = useState("");
 
@@ -37,27 +48,33 @@ function UploadForm({ onUpload }) {
     setFile(selectedFile);
   }
 
-  function handleSubmit(event) {
+  async function handleSubmit(event) {
     event.preventDefault();
     setError("");
 
-    if (!name.trim() || !rollNumber.trim() || !file) {
+    if (!name.trim() || !rollNumber.trim() || !category || !file) {
       setError("Please fill in all fields and select a PNG image.");
       return;
     }
 
-    onUpload({
-      name: name.trim(),
-      rollNumber: rollNumber.trim(),
-      file,
-    });
+    try {
+      await onUpload({
+        name: name.trim(),
+        rollNumber: rollNumber.trim(),
+        category,
+        file,
+      });
 
-    setName("");
-    setRollNumber("");
-    setFile(null);
+      setName("");
+      setRollNumber("");
+      setCategory("");
+      setFile(null);
 
-    if (fileInputRef.current) {
-      fileInputRef.current.value = "";
+      if (fileInputRef.current) {
+        fileInputRef.current.value = "";
+      }
+    } catch (error) {
+      setError(error.message || "Certificate upload failed.");
     }
   }
 
@@ -66,15 +83,13 @@ function UploadForm({ onUpload }) {
       <div className="section-heading">
         <div>
           <p className="eyebrow">CONTRIBUTE</p>
-          <h2>Upload New Photo</h2>
+          <h2>Upload New Certificate</h2>
           <p className="section-description">
-            Add a student's photo to the gallery.
+            Add a student's certificate to the gallery.
           </p>
         </div>
 
-        <span className="upload-icon" aria-hidden="true">
-          ↑
-        </span>
+        <span className="upload-icon" aria-hidden="true">↑</span>
       </div>
 
       <form onSubmit={handleSubmit}>
@@ -84,14 +99,13 @@ function UploadForm({ onUpload }) {
             type="file"
             accept=".png,image/png"
             onChange={handleFileChange}
+            disabled={isUploading}
           />
 
-          <span className="file-icon" aria-hidden="true">
-            ▧
-          </span>
+          <span className="file-icon" aria-hidden="true">▧</span>
 
           <strong>
-            {file ? file.name : "Choose a PNG photo"}
+            {file ? file.name : "Choose a PNG certificate"}
           </strong>
 
           <span>
@@ -112,6 +126,7 @@ function UploadForm({ onUpload }) {
               onChange={(event) => setName(event.target.value)}
               maxLength={100}
               required
+              disabled={isUploading}
             />
           </div>
 
@@ -125,7 +140,30 @@ function UploadForm({ onUpload }) {
               onChange={(event) => setRollNumber(event.target.value)}
               maxLength={30}
               required
+              disabled={isUploading}
             />
+          </div>
+
+          <div className="field">
+            <label htmlFor="certificate-category">
+              Certificate Category
+            </label>
+
+            <select
+              id="certificate-category"
+              value={category}
+              onChange={(event) => setCategory(event.target.value)}
+              required
+              disabled={isUploading}
+            >
+              <option value="">Select category</option>
+
+              {categories.map((item) => (
+                <option key={item} value={item}>
+                  {item}
+                </option>
+              ))}
+            </select>
           </div>
         </div>
 
@@ -135,8 +173,13 @@ function UploadForm({ onUpload }) {
           </p>
         )}
 
-        <button className="upload-button" type="submit">
-          Add Photo to Gallery <span>→</span>
+        <button
+          className="upload-button"
+          type="submit"
+          disabled={isUploading}
+        >
+          {isUploading ? "Uploading..." : "Add Certificate to Gallery"}
+          <span>→</span>
         </button>
       </form>
     </section>

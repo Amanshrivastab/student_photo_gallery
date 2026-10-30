@@ -1,6 +1,7 @@
-
+const crypto = require("crypto");
 const Photo = require("../models/Photo");
 const cloudinary = require("../config/cloudinary");
+const mongoose = require("mongoose");
 
 const ALLOWED_CATEGORIES = [
   "Academic",
@@ -140,4 +141,83 @@ async function getPhotos(req, res){
   }
 }
 
-module.exports = { uploadPhoto , getPhotos };
+async function deletePhoto(req, res) {
+  try {
+    const { id } = req.params;
+   const { password } = req.body || {};
+
+    // Check whether the ID is valid
+    if (!mongoose.isValidObjectId(id)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid certificate ID",
+      });
+    }
+
+    // Check password
+    const correctPassword = process.env.DELETE_PASSWORD;
+
+    if (!correctPassword) {
+      return res.status(500).json({
+        success: false,
+        message: "Delete password is not configured",
+      });
+    }
+
+    if (typeof password !== "string") {
+      return res.status(401).json({
+        success: false,
+        message: "Incorrect delete password",
+      });
+    }
+
+    const submitted = Buffer.from(password);
+    const expected = Buffer.from(correctPassword);
+
+    const passwordMatches =
+      submitted.length === expected.length &&
+      crypto.timingSafeEqual(submitted, expected);
+
+    if (!passwordMatches) {
+      return res.status(401).json({
+        success: false,
+        message: "Incorrect delete password",
+      });
+    }
+
+    // Find certificate in MongoDB
+    const photo = await Photo.findById(id);
+
+    if (!photo) {
+      return res.status(404).json({
+        success: false,
+        message: "Certificate not found",
+      });
+    }
+
+    // Delete image from Cloudinary
+    await cloudinary.uploader.destroy(
+      photo.cloudinaryPublicId,
+      { resource_type: "image" }
+    );
+
+    // Delete certificate record from MongoDB
+    await Photo.findByIdAndDelete(id);
+
+    return res.status(200).json({
+      success: true,
+      message: "Certificate deleted successfully",
+    });
+
+  } catch (error) {
+    console.error("Delete certificate error:", error.message);
+
+    return res.status(500).json({
+      success: false,
+      message: "Unable to delete certificate",
+    });
+  }
+}
+
+
+module.exports = { uploadPhoto , getPhotos , deletePhoto };

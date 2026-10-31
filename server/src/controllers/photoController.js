@@ -13,6 +13,14 @@ const ALLOWED_CATEGORIES = [
   "Other",
 ];
 
+const ALLOWED_MIME_TYPES = [
+  "image/png",
+  "image/jpeg",
+  "image/webp",
+  "image/gif",
+  "image/bmp",
+];
+
 
 
 
@@ -42,6 +50,8 @@ async function uploadPhoto(req, res) {
       !rollNumber?.trim() ||
       !category
     ) {
+      await removeUploadedFile(req.file);
+
       return res.status(400).json({
         success: false,
         message: "Name, roll number and category are required",
@@ -50,7 +60,7 @@ async function uploadPhoto(req, res) {
 
     // Check category
     if (!ALLOWED_CATEGORIES.includes(category)) {
-          await removeUploadedFile(req.file);
+      await removeUploadedFile(req.file);
 
       return res.status(400).json({
         success: false,
@@ -62,7 +72,18 @@ async function uploadPhoto(req, res) {
     if (!req.file) {
       return res.status(400).json({
         success: false,
-        message: "Please upload a PNG certificate",
+        message: "Please upload a certificate image",
+      });
+    }
+
+    // Validate image MIME type
+    if (!ALLOWED_MIME_TYPES.includes(req.file.mimetype)) {
+      await removeUploadedFile(req.file);
+
+      return res.status(400).json({
+        success: false,
+        message:
+          "Only PNG, JPG, JPEG, WEBP, GIF and BMP images are allowed",
       });
     }
 
@@ -82,8 +103,10 @@ async function uploadPhoto(req, res) {
       message: "Certificate uploaded successfully",
       data: photo,
     });
+
   } catch (error) {
-    // Remove the Cloudinary file if database saving fails
+
+    // Remove Cloudinary file if database saving fails
     if (uploadedPublicId) {
       try {
         await cloudinary.uploader.destroy(uploadedPublicId, {

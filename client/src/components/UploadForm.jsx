@@ -12,6 +12,25 @@ const categories = [
   "Other",
 ];
 
+const ALLOWED_MIME_TYPES = [
+  "image/png",
+  "image/jpeg",
+  "image/webp",
+  "image/gif",
+  "image/bmp",
+];
+
+const ALLOWED_EXTENSIONS = [
+  ".png",
+  ".jpg",
+  ".jpeg",
+  ".webp",
+  ".gif",
+  ".bmp",
+];
+
+const MAX_FILE_SIZE = 10 * 1024 * 1024;
+
 function UploadForm({ onUpload, isUploading = false }) {
   const fileInputRef = useRef(null);
 
@@ -29,17 +48,26 @@ function UploadForm({ onUpload, isUploading = false }) {
 
     if (!selectedFile) return;
 
-    const isPng =
-      selectedFile.type === "image/png" &&
-      selectedFile.name.toLowerCase().endsWith(".png");
+    const fileName = selectedFile.name.toLowerCase();
 
-    if (!isPng) {
-      setError("Please select a PNG image only.");
+    const hasValidExtension = ALLOWED_EXTENSIONS.some(
+      (extension) => fileName.endsWith(extension)
+    );
+
+    const hasValidMimeType = ALLOWED_MIME_TYPES.includes(
+      selectedFile.type
+    );
+
+    if (!hasValidExtension || !hasValidMimeType) {
+      setError(
+        "Unsupported file format. Please select PNG, JPG, JPEG, WEBP, GIF or BMP."
+      );
+
       event.target.value = "";
       return;
     }
 
-    if (selectedFile.size > 10 * 1024 * 1024) {
+    if (selectedFile.size > MAX_FILE_SIZE) {
       setError("Image size must be 10 MB or less.");
       event.target.value = "";
       return;
@@ -53,7 +81,9 @@ function UploadForm({ onUpload, isUploading = false }) {
     setError("");
 
     if (!name.trim() || !rollNumber.trim() || !category || !file) {
-      setError("Please fill in all fields and select a PNG image.");
+      setError(
+        "Please fill in all fields and select a valid image."
+      );
       return;
     }
 
@@ -97,7 +127,7 @@ function UploadForm({ onUpload, isUploading = false }) {
           <input
             ref={fileInputRef}
             type="file"
-            accept=".png,image/png"
+            accept={ALLOWED_EXTENSIONS.join(",")}
             onChange={handleFileChange}
             disabled={isUploading}
           />
@@ -105,13 +135,13 @@ function UploadForm({ onUpload, isUploading = false }) {
           <span className="file-icon" aria-hidden="true">▧</span>
 
           <strong>
-            {file ? file.name : "Choose a PNG certificate"}
+            {file ? file.name : "Choose a certificate image"}
           </strong>
 
           <span>
             {file
               ? `${(file.size / (1024 * 1024)).toFixed(2)} MB`
-              : "PNG format only · Maximum 10 MB"}
+              : "PNG, JPG, JPEG, WEBP, GIF, BMP · Maximum 10 MB"}
           </span>
         </label>
 

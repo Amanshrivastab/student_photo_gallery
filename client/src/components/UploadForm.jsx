@@ -7,7 +7,7 @@ const categories = [
   "Course Completion",
   "Internship",
   "Hackathon",
-  "Achievement",
+  "ML certificate",
   "Workshop & Webinar",
   "Other",
 ];

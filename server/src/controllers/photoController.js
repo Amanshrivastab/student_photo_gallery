@@ -8,7 +8,7 @@ const ALLOWED_CATEGORIES = [
   "Course Completion",
   "Internship",
   "Hackathon",
-  "Achievement",
+  "ML certificate",
   "Workshop & Webinar",
   "Other",
 ];

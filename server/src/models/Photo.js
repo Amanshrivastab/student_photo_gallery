@@ -25,7 +25,7 @@ const photoSchema = new mongoose.Schema(
         "Course Completion",
         "Internship",
         "Hackathon",
-        "Achievement",
+        "ML certificate",
         "Workshop & Webinar",
         "Other",
       ],
